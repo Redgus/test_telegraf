@@ -7,6 +7,7 @@ bot.use(async (ctx, next) => {
 
     const date = new Date();
 
+    console.log('new code');
     console.log(`[${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}] Пользователь ${ctx.from.id}`);
     await next();
 });
