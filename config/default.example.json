@@ -1,3 +1,7 @@
 {
-    "token" : "6458415821:AAFEDUwkR64JJT117nXjMAlwYQ3ZvIyjBQE"
+    "token" : "6458415821:AAFEDUwkR64JJT117nXjMAlwYQ3ZvIyjBQE",
+    "Mongo" : {
+        "url" : "mongodb://127.0.0.1:27017"
+    },
+    "url_rate" : "https://cbu.uz/ru/arkhiv-kursov-valyut/json"
 }
