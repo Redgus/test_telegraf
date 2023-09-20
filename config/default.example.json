@@ -3,5 +3,6 @@
     "Mongo" : {
         "url" : "mongodb://127.0.0.1:27017"
     },
-    "url_rate" : "https://cbu.uz/ru/arkhiv-kursov-valyut/json"
+    "url_rate" : "https://cbu.uz/ru/arkhiv-kursov-valyut/json",
+    "test" : "a"
 }
