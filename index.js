@@ -22,7 +22,7 @@ const init = async () => {
         await next();
     });
     
-    bot.start((ctx) => ctx.reply('Welcome'))
+    bot.start((ctx) => ctx.reply('Welcome 1'))
     bot.help((ctx) => ctx.reply('Send me a sticker'))
     bot.on('sticker', (ctx) => ctx.reply('👍'))
     bot.hears('hi', (ctx) => ctx.reply('Hey there'))
