@@ -1,0 +1,3 @@
+greeting: Hello ${name}!
+cart: ${from.first_name}, in your cart ${pluralize(apples, 'apple', 'apples')}
+checkout: Thank you

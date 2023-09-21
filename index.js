@@ -4,6 +4,16 @@ const { MongoClient } = require('mongodb');
 const { session } = require('telegraf-session-mongodb');
 const axios = require('axios');
 
+const path = require('path')
+const TelegrafI18n = require('telegraf-i18n')
+const { Extra } = Telegraf
+
+const i18n = new TelegrafI18n({
+    useSession: true,
+    defaultLanguageOnMissing: true,
+    directory: path.resolve(__dirname, 'locales')
+});
+
 const bot = new Telegraf(config.get('token'))
 
 const init = async () => {
@@ -11,7 +21,11 @@ const init = async () => {
 
     bot.use(session(db));
 
+    bot.use(i18n.middleware());
+
     bot.use(async (ctx, next) => {
+        
+        console.log(ctx.i18n.locale());
 
         const date = new Date();
     
@@ -54,10 +68,15 @@ const init = async () => {
     });
     
     bot.start(async (ctx) => {
-        let caption = `Здравствуйте.`
+
+        console.log(ctx.from);
+        console.log(ctx.from.username);
+
+        let caption = ctx.i18n.t('greeting', { name : ctx.from.username});
 
         let settings = { parse_mode: 'MarkdownV2', disable_web_page_preview: true, ...Markup.keyboard([
-			["Получить курсы"]
+			["Получить курсы"],
+            ['Русский', 'English', 'O\'zbek']
 		]).resize()
     }
 
@@ -65,7 +84,9 @@ const init = async () => {
     })
     bot.help((ctx) => ctx.reply('Send me a sticker'))
     bot.on('sticker', (ctx) => ctx.reply('👍'))
-    bot.hears('hi', (ctx) => ctx.reply('Hey there'))
+    bot.hears('Русский', (ctx) => ctx.i18n.locale('ru'))
+    bot.hears('English', (ctx) => ctx.i18n.locale('en'))
+    bot.hears('O\'zbek', (ctx) => ctx.i18n.locale('uz'))
     
     bot.hears('Получить курсы', (ctx) => {
 
