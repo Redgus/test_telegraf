@@ -1,21 +1,19 @@
 const config = require('config');
-const { Telegraf, Markup } = require('telegraf')
+const { Telegraf, Markup } = require('telegraf');
 const { MongoClient } = require('mongodb');
 const { session } = require('telegraf-session-mongodb');
-const axios = require('axios');
 
 const path = require('path');
 const TelegrafI18n = require('telegraf-i18n');
-const { match, reply } = require('telegraf-i18n')
-const { Extra } = Telegraf;
-
+const { match, reply } = require('telegraf-i18n');
+const { get_baza } = require('./component/rate_currency');
 const i18n = new TelegrafI18n({
     useSession: true,
     defaultLanguageOnMissing: true,
     directory: path.resolve(__dirname, 'locales')
 });
 
-const bot = new Telegraf(config.get('token'))
+const bot = new Telegraf(config.get('token'));
 
 const init = async () => {
     const db = (await MongoClient.connect(config.get('Mongo.url'), { useNewUrlParser: true, useUnifiedTopology: true, dbName : 'telegram' })).db();
@@ -96,29 +94,14 @@ const init = async () => {
         return await ctx.send_message(ctx, caption, settings);
     });
     
-    bot.hears(match('rate_get'), (ctx) => {
+    bot.hears(match('rate_get'), async (ctx) => {
 
-        let mas = ['RUB', 'EUR', 'USD'];
+        let data = await get_baza();
 
-        let date = new Date();
+        for (const key of data) {
+            ctx.reply(`${key.name} - ${key.rate} - ${key.date}`)
 
-        for (const key of mas) {
-            axios.get(`${config.get('url_rate')}/${key}/${date.getUTCFullYear()}-0${date.getUTCMonth() + 1}-${date.getUTCDate()}`)
-            .then(function (response) {
-
-                for (const iterator of response.data) {
-                    ctx.reply(`${iterator.CcyNm_UZ} - ${iterator.Rate} - ${ iterator.Date }`)
-                }
-            })
-            .catch(function (error) {
-                // handle error
-                console.log(error);
-            })
-            .finally(function () {
-                // always executed
-            });
         }
- 
     });
 
     bot.catch((err, ctx) => {
