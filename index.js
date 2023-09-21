@@ -1,5 +1,5 @@
 const config = require('config');
-const { Telegraf } = require('telegraf')
+const { Telegraf, Markup } = require('telegraf')
 const { MongoClient } = require('mongodb');
 const { session } = require('telegraf-session-mongodb');
 const axios = require('axios');
@@ -20,15 +20,54 @@ const init = async () => {
         ctx.session.date = `[${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}]`;
         
         console.log(`[${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}] Пользователь ${ctx.from.id}`);
+
+        ctx.format_message_telegram = async (text) => {
+
+            const specialChars = /[.()+_~\-#*=!]/g;
+            const format_test = text.replace(specialChars, match => `\\${match}`);
+            return format_test.replace(/\\\(\\\(/g, '(').replace(/\\\)\\\)/g, ')'); // replace "((" with "(" and "))" with ")"
+        }
+
+        ctx.send_message = async (ctx, message, settings=null) => {
+
+            try {
+      
+                return await ctx.editMessageText(
+                    await ctx.format_message_telegram(message), 
+                    settings
+                );
+            } catch (error) {
+                
+                if(ctx.callbackQuery?.message.message_id){
+
+                    await ctx.tg.deleteMessage(ctx.chat.id, ctx.callbackQuery.message.message_id)
+                }
+
+                return await ctx.reply(
+                  await ctx.format_message_telegram(message), 
+                  settings
+                );
+            }
+        }
+
         await next();
     });
     
-    bot.start((ctx) => ctx.reply('Welcome 1'))
+    bot.start(async (ctx) => {
+        let caption = `Здравствуйте.`
+
+        let settings = { parse_mode: 'MarkdownV2', disable_web_page_preview: true, ...Markup.keyboard([
+			["Получить курсы"]
+		]).resize()
+    }
+
+        return await ctx.send_message(ctx, caption, settings);
+    })
     bot.help((ctx) => ctx.reply('Send me a sticker'))
     bot.on('sticker', (ctx) => ctx.reply('👍'))
     bot.hears('hi', (ctx) => ctx.reply('Hey there'))
     
-    bot.command('get_rate', (ctx) => {
+    bot.hears('Получить курсы', (ctx) => {
 
         let mas = ['RUB', 'EUR', 'USD'];
 
