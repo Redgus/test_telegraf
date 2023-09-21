@@ -16,7 +16,7 @@ const i18n = new TelegrafI18n({
 const bot = new Telegraf(config.get('token'));
 
 const init = async () => {
-    
+
     const db = (await MongoClient.connect(config.get('Mongo.url'), { useNewUrlParser: true, useUnifiedTopology: true, dbName : 'telegram' })).db();
 
     bot.use(session(db));
