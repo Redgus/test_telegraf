@@ -26,9 +26,9 @@ async function get_currency(currency) {
     let data = await axios.get(`${config.get('url_rate')}/${currency}/${date.getUTCFullYear()}-0${date.getUTCMonth() + 1}-${date.getUTCDate()}`);
 
     return {
-        'name' : data.CcyNm_UZ,
-        'rate' : data.Rate,
-        'date' : data.Date,
+        'name' : data.data[0].CcyNm_UZ,
+        'rate' : data.data[0].Rate,
+        'date' : data.data[0].Date,
     };
 }
 
@@ -39,7 +39,7 @@ async function get_baza() {
     
     for (const key of mas) {
 
-        data.push(await get_currency());
+        data.push(await get_currency(key));
     }
 
     return data;
