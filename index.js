@@ -24,8 +24,6 @@ const init = async () => {
     bot.use(i18n.middleware());
 
     bot.use(async (ctx, next) => {
-        
-        console.log(ctx.i18n.locale());
 
         const date = new Date();
     
@@ -68,9 +66,6 @@ const init = async () => {
     });
     
     bot.start(async (ctx) => {
-
-        console.log(ctx.from);
-        console.log(ctx.from.username);
 
         let caption = ctx.i18n.t('greeting', { name : ctx.from.username});
 
