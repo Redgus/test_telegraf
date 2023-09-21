@@ -1,2 +1,4 @@
 greeting: Assalom Aleykum ${name}!
 cart: В вашей корзине ${pluralize(apples, 'яблоко', 'яблокa', 'яблок')}
+rate:
+button: Kurs kadrmi

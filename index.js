@@ -4,9 +4,10 @@ const { MongoClient } = require('mongodb');
 const { session } = require('telegraf-session-mongodb');
 const axios = require('axios');
 
-const path = require('path')
-const TelegrafI18n = require('telegraf-i18n')
-const { Extra } = Telegraf
+const path = require('path');
+const TelegrafI18n = require('telegraf-i18n');
+const { match, reply } = require('telegraf-i18n')
+const { Extra } = Telegraf;
 
 const i18n = new TelegrafI18n({
     useSession: true,
@@ -70,10 +71,11 @@ const init = async () => {
         let caption = ctx.i18n.t('greeting', { name : ctx.from.username});
 
         let settings = { parse_mode: 'MarkdownV2', disable_web_page_preview: true, ...Markup.keyboard([
-			["Получить курсы"],
-            ['Русский', 'English', 'O\'zbek']
-		]).resize()
-    }
+                [ctx.i18n.t('checkout')],
+                [ctx.i18n.t('rate_get')],
+                [ctx.i18n.t('setting')]
+            ]).resize()
+        }
 
         return await ctx.send_message(ctx, caption, settings);
     })
@@ -82,8 +84,19 @@ const init = async () => {
     bot.hears('Русский', (ctx) => ctx.i18n.locale('ru'))
     bot.hears('English', (ctx) => ctx.i18n.locale('en'))
     bot.hears('O\'zbek', (ctx) => ctx.i18n.locale('uz'))
+
+    bot.hears(match('setting'), async (ctx) => {
+        let caption = ctx.i18n.t('greeting', { name : ctx.from.username});
+
+        let settings = { parse_mode: 'MarkdownV2', disable_web_page_preview: true, ...Markup.keyboard([
+                ["Русский", "English", "O'zbek"]
+            ]).resize()
+        }
+
+        return await ctx.send_message(ctx, caption, settings);
+    });
     
-    bot.hears('Получить курсы', (ctx) => {
+    bot.hears(match('rate_get'), (ctx) => {
 
         let mas = ['RUB', 'EUR', 'USD'];
 
@@ -105,9 +118,8 @@ const init = async () => {
                 // always executed
             });
         }
-
-        
-    })
+ 
+    });
 
     bot.catch((err, ctx) => {
         console.error(`⚠️ Error on ${ctx.updateType}: ${err.message}`, err)

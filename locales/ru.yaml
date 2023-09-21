@@ -1,2 +1,4 @@
 greeting: Привет ${name}!
 cart: В вашей корзине ${pluralize(apples, 'яблоко', 'яблокa', 'яблок')}
+rate:
+button: Получить курс
