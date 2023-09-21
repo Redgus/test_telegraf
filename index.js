@@ -19,7 +19,6 @@ const init = async () => {
     const db = (await MongoClient.connect(config.get('Mongo.url'), { useNewUrlParser: true, useUnifiedTopology: true, dbName : 'telegram' })).db();
 
     bot.use(session(db));
-
     bot.use(i18n.middleware());
 
     bot.use(async (ctx, next) => {
@@ -69,7 +68,6 @@ const init = async () => {
         let caption = ctx.i18n.t('greeting', { name : ctx.from.username});
 
         let settings = { parse_mode: 'MarkdownV2', disable_web_page_preview: true, ...Markup.keyboard([
-                [ctx.i18n.t('checkout')],
                 [ctx.i18n.t('rate_get')],
                 [ctx.i18n.t('setting')]
             ]).resize()
@@ -111,4 +109,4 @@ const init = async () => {
     bot.launch();
 }
 
-init()
+init();
