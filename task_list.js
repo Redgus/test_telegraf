@@ -6,7 +6,9 @@ const { get_baza } = require('./component/rate_currency');
 const bot = set_bot(config.get('token'));
 
 async function main() {
-    const db = await connect_db(config.get('Mongo.url'));
+    const client = await connect_db(config.get('Mongo.url'));
+
+    const db = await client.db();
     
     let data = await db.collection('sessions').find({}).toArray();
 
@@ -21,7 +23,11 @@ async function main() {
         }
     }
 
-    process.exit(1);
+    let date = new Date();
+
+    console.log(`${date.getUTCDate()} ${date.getUTCMonth()} ${date.getUTCFullYear()}`);
+
+    await client.close();
 }
 
 main();

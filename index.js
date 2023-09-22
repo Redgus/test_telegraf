@@ -20,8 +20,10 @@ const bot = set_bot(config.get('token'));
 
 const init = async () => {
 
-    const db = await connect_db(config.get('Mongo.url'));
+    const client = await connect_db(config.get('Mongo.url'));
 
+    const db = await client.db();
+    
     let data = await db.collection('sessions').find({}).toArray();
 
     console.log(data);
