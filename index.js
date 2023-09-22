@@ -1,7 +1,8 @@
 const config = require('config');
-const { Telegraf, Markup } = require('telegraf');
-const { MongoClient } = require('mongodb');
+const { Markup } = require('telegraf');
 const { session } = require('telegraf-session-mongodb');
+// const { bot } = require('./telegram_bot');
+const { set_bot } = require('./telegram/bot');
 
 const path = require('path');
 const TelegrafI18n = require('telegraf-i18n');
@@ -13,11 +14,17 @@ const i18n = new TelegrafI18n({
     directory: path.resolve(__dirname, 'locales')
 });
 
-const bot = new Telegraf(config.get('token'));
+const { connect_db } = require('./db/connect');
+
+const bot = set_bot(config.get('token'));
 
 const init = async () => {
 
-    const db = (await MongoClient.connect(config.get('Mongo.url'), { useNewUrlParser: true, useUnifiedTopology: true, dbName : 'telegram' })).db();
+    const db = await connect_db(config.get('Mongo.url'));
+
+    let data = await db.collection('sessions').find({}).toArray();
+
+    console.log(data);
 
     bot.use(session(db));
     bot.use(i18n.middleware());
@@ -67,6 +74,11 @@ const init = async () => {
     bot.start(async (ctx) => {
 
         let caption = ctx.i18n.t('greeting', { name : ctx.from.username});
+
+        if(!ctx.session.chat_id){
+
+            ctx.session.chat_id = ctx.from.id;
+        }
 
         let settings = { parse_mode: 'MarkdownV2', disable_web_page_preview: true, ...Markup.keyboard([
                 [ctx.i18n.t('rate_get')],
