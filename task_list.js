@@ -31,6 +31,6 @@ async function main() {
     await client.close();
 }
 
-cron.schedule('* * * * *', async () => {
+cron.schedule('0 * * * *', async () => {
     await main()
 });
